@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demosb.Mapper.WXuserMapper" >
+
+    <resultMap id="BaseResultMap" type="com.example.demosb.Entity.WXuser" >
+
+        <result column="openId" property="openId" jdbcType="VARCHAR" />
+        <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+        <result column="sex" property="sex" jdbcType="VARCHAR" />
+        <result column="country" property="country" jdbcType="VARCHAR" />
+        <result column="province" property="province" jdbcType="VARCHAR" />
+        <result column="city" property="city" jdbcType="VARCHAR" />
+        <result column="headimgurl" property="headimgurl" jdbcType="VARCHAR" />
+        <result column="cardid" property="cardid" jdbcType="VARCHAR" />
+        <result column="truename" property="truename" jdbcType="VARCHAR" />
+        <result column="telphone" property="telphone" jdbcType="VARCHAR" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="password" property="password" jdbcType="VARCHAR" />
+        <result column="login_time" property="login_time" jdbcType="VARCHAR" />
+        <result column="login_ip" property="login_ip" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <insert id="insertWXuser" parameterType="com.example.demosb.Entity.WXuser" >
+        INSERT INTO wx_user (openId,nickname,sex,country,province,headimgurl,cardid,truename ,telphone,email,password,login_time,login_ip,status)
+        SELECT
+        #{openId},
+        #{nickname},
+        #{sex},
+        #{country},
+        #{province},
+        #{headimgurl},
+        #{cardid},
+        #{truename},
+        #{telphone},
+        #{email},
+        #{password},
+        #{login_time},
+        #{login_ip},
+        #{status}
+        FROM DUAL WHERE NOT EXISTS (SELECT id FROM  wx_user WHERE openId = #{openId,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="querybyopenid" resultType="com.example.demosb.Entity.WXuser">
+        select *
+        from wx_user
+        where openId=#{openId}
+    </select>
+
+    <select id="updateWXuser" parameterType="com.example.demosb.Entity.WXuser" >
+        UPDATE wx_user SET truename=#{truename} , cardid=#{cardid}  WHERE  openId=#{openId,jdbcType=VARCHAR};
+    </select>
+
+</mapper>

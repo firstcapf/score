@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demosb.Mapper.AchievementMapper" >
+
+    <select id="query" resultType="com.example.demosb.Entity.Achievement">
+        SELECT *
+        FROM achievement
+        order by createtime desc
+    </select>
+    <select id="queryid" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM achievement
+        where id=#{id}
+    </select>
+    <insert id="create" parameterType="com.example.demosb.Entity.Achievement">
+        insert into
+        achievement(subject,place,name,phone,idcard,company,grade,remarks,sex,seatnumber,createtime)
+        values
+        (#{subject},#{place},#{name},#{phone},#{idcard},#{company},#{grade},#{remarks},#{sex},#{seatnumber},#{createtime})
+    </insert>
+    <delete id="deletebyid" parameterType="java.lang.Integer">
+        delete
+        from achievement
+        where id=#{id}
+    </delete>
+    <update id="update" parameterType="com.example.demosb.Entity.Achievement">
+        update achievement
+        <set>
+            <if test="subject!=null">subject=#{subject},</if>
+            <if test="place!=null">place=#{place},</if>
+            <if test="name!=null">name=#{name},</if>
+            <if test="phone!=null">phone=#{phone},</if>
+            <if test="idcard!=null">idcard=#{idcard},</if>
+            <if test="company!=null">company=#{company},</if>
+            <if test="grade!=null">grade=#{grade},</if>
+            <if test="updatetime!=null">updatetime=#{updatetime},</if>
+            <if test="modifier!=null">modifier=#{modifier},</if>
+            <if test="reason!=null">reason=#{reason},</if>
+            <if test="remarks!=null">remarks=#{remarks},</if>
+            <if test="sex!=null">sex=#{sex},</if>
+            <if test="seatnumber!=null">seatnumber=#{seatnumber},</if>
+            <if test="testtime!=null">testtime=#{testtime}</if>
+        </set>
+        where id=#{id}
+    </update>
+    <update id="updateexcel" parameterType="com.example.demosb.Entity.Achievement">
+        update achievement
+        <set>
+            <if test="subject!=null">subject=#{subject},</if>
+            <if test="place!=null">place=#{place},</if>
+            <if test="name!=null">name=#{name},</if>
+            <if test="phone!=null">phone=#{phone},</if>
+            <if test="idcard!=null">idcard=#{idcard},</if>
+            <if test="company!=null">company=#{company},</if>
+            <if test="grade!=null">grade=#{grade},</if>
+            <if test="updatetime!=null">updatetime=#{updatetime},</if>
+            <if test="modifier!=null">modifier=#{modifier},</if>
+            <if test="reason!=null">reason=#{reason},</if>
+            <if test="remarks!=null">remarks=#{remarks},</if>
+            <if test="sex!=null">sex=#{sex},</if>
+            <if test="seatnumber!=null">seatnumber=#{seatnumber},</if>
+            <if test="testtime!=null">testtime=#{testtime}</if>
+        </set>
+        where idcard=#{idcard}
+    </update>
+    <!--<select id="querybyid" resultType="com.example.demosb.Entity.Achievement">-->
+        <!--select id,subject,place,name,phone,idcard,company,grade,testtime-->
+        <!--from achievement-->
+        <!--where subject=#{subject} and name=#{name} and idcard=#{idcard}-->
+    <!--</select>-->
+    <select id="querybyid" resultType="com.example.demosb.Entity.Achievement">
+        select *
+        from achievement
+        where name=#{name} and idcard=#{idcard}
+    </select>
+    <select id="queryexcel" resultType="com.example.demosb.Entity.Achievement">
+        select subject,place,name,phone,idcard,company,grade,testtime,sex,seatnumber
+        from achievement
+    </select>
+    <select id="queryidcard" resultType="java.lang.Integer">
+        select count(*)
+        from achievement
+        where idcard=#{idcard}
+    </select>
+    <select id="countidcard" resultType="java.lang.Integer">
+        select count(*)
+        from achievement
+        where idcard=#{idcard} and subject=#{subject} and name=#{name}
+    </select>
+    <select id="queryfuzzy" resultType="com.example.demosb.Entity.Achievement" parameterType="java.lang.String">
+        select *
+        FROM achievement
+        where CONCAT(IFNULL(idcard,''),IFNULL(subject,''),IFNULL(place,''),IFNULL(name,''),IFNULL(phone,''),IFNULL(company,''),IFNULL(sex,''),
+        IFNULL(seatnumber,''))
+        like CONCAT(CONCAT('%',#{idcard},'%'))
+    </select>
+</mapper>
