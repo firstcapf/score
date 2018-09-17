@@ -41,7 +41,7 @@ public class WXuserController {
            System.out.println("getAccessToken:"+token.getAccessToken());
            SNSUserInfo userinfo=CommonUtil.getSNSUserInfo(token.getAccessToken(),token.getOpenId());
         System.out.println("22");
-          if(userinfo!=null)
+          if(userinfo!=null&&userinfo.getOpenId()!=null)
           {
               System.out.println("333");
               WXuser wxuser=new WXuser();
