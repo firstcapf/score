@@ -100,26 +100,29 @@ public class AchievementController {
     @ApiOperation(value = "按条件查询",notes = "按身份证号，姓名，科目查询考生成绩信息",httpMethod = "GET")
     @GetMapping(value = "/querybyid")
     public Result<Achievement> querybyid(HttpServletRequest request,String name, String idcard) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
-        Result re=ResultUtils.success(achievementService.querybyid(name, idcard));
 
         String openid=(String)request.getSession().getAttribute("openid");
+        Result re=null;
+        if(idcard==null||idcard.length()<10)
+        {
+            if(openid!=null&&openid.length()>4)
+            {
+                WXuser wxuser=new WXuser();
+                wxuser.setOpenId(openid);
+                wxuser= wxuserService.querybyopenid(wxuser);
+                idcard=wxuser.getCardid();
+                name=wxuser.getTruename();
+                System.out.println();
+            }
+        }
 
-System.out.println("openid:"+openid);
-
-      //  String str=CommonUtil.getcode();
-//
-   //     request.getSession().setAttribute("openid", token.getOpenId());
-      //  request.getSession().setAttribute(Config.USER_SESSION_KEY, loginInfo);
-
-
-     //   System.out.println("str:"+str);
+        re=ResultUtils.success(achievementService.querybyid(name, idcard));
 
         if(re.getCode()==200&&openid!=null) {
             WXuser wxuser=new WXuser();
             wxuser.setTruename(name);
             wxuser.setOpenId(openid);
             wxuser.setCardid(idcard);
-
             wxuserService.updateWXuser(wxuser);
         }
 

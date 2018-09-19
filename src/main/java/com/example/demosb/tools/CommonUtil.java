@@ -38,7 +38,7 @@ public class CommonUtil {
         requestUrl = requestUrl.replace("APPID", appId);
         requestUrl = requestUrl.replace("SECRET", appSecret);
         requestUrl = requestUrl.replace("CODE", code);
-        System.out.println(requestUrl);
+       // System.out.println(requestUrl);
         // 获取网页授权凭证
         JSONObject jsonObject =JSONObject.parseObject( CommonUtil.httpsRequest(requestUrl, "GET", null).toString());
         if (null != jsonObject) {
@@ -47,7 +47,7 @@ public class CommonUtil {
           //      System.out.println("access_token:"+jsonObject.getString("access_token"));
            //     System.out.println("openid:"+jsonObject.getString("openid"));
                 wat.setAccessToken(jsonObject.getString("access_token"));
-                System.out.println("access_token:"+wat.getAccessToken());
+               // System.out.println("access_token:"+wat.getAccessToken());
                 wat.setExpiresIn(jsonObject.getInteger("expires_in"));
                 wat.setRefreshToken(jsonObject.getString("refresh_token"));
                 wat.setOpenId(jsonObject.getString("openid"));
