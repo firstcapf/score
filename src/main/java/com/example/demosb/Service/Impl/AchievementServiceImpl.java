@@ -1,8 +1,7 @@
 package com.example.demosb.Service.Impl;
 
 
-import com.example.demosb.Entity.Achievement;
-import com.example.demosb.Entity.Result;
+import com.example.demosb.Entity.*;
 import com.example.demosb.Exception.ErrorEnum;
 import com.example.demosb.Exception.MyException;
 import com.example.demosb.Mapper.AchievementMapper;
@@ -130,12 +129,101 @@ public class AchievementServiceImpl implements AchievementService {
             return ResultUtils.success(achievementMapper.querybyid(name, idcard));
         }
     }
+
+//    @Override
+//    public String querylogic(String openid){
+//            return achievementMapper.querylogic(openid);
+//    }
+    @Override
+    public String querytime(String openid){
+        return achievementMapper.querytime(openid);
+    }
+    @Override
+    public Result<WXuser> updatelogic(String logic,String openid,String time2,String time1){
+        achievementMapper.updatelogic(logic, openid,time2,time1);
+        return ResultUtils.success();
+
+    }
+//    @Override
+//    public Result<WXuser> insertlogic(String logic,String openid,String time2,String time1){
+//        achievementMapper.insertlogic(logic, openid,time2,time1);
+//        return ResultUtils.success();
+//
+//    }
+    //查询签到记录
+    @Override
+    public Result queryregister(String openid,String type){
+        return ResultUtils.success(achievementMapper.queryregister(openid,type));
+    }
+    @Override
+    public Integer querycount(String openid,String time2){
+        return achievementMapper.querycount(openid,time2);
+    }
+    @Override
+    public Integer querycount2(String openid,String time2){
+        return achievementMapper.querycount2(openid,time2);
+    }
+    //查询是否报到
+    @Override
+    public String querybylogic(String openid,String type){
+        return achievementMapper.querybylogic(openid, type);
+    }
+    //添加报到信息
+    public Result insertreport(String openid,String type,String logic,String time,String company){
+        achievementMapper.insertreport(openid,type,logic,time,company);
+        return ResultUtils.success();
+    }
+    //查询报到信息
+    public Result queryreport(String openid,String type){
+        return ResultUtils.success(achievementMapper.queryreport(openid, type));
+    }
+    //查询开始时间
+    public Timestamp querystarttime(String type){
+        return achievementMapper.querystarttime(type);
+    }
+    //查询结束时间
+    public Timestamp queryendtime(String type){
+        return achievementMapper.queryendtime(type);
+    }
+    //签到
+    @Override
+    public Result<WXuser> insertlogic(String logic,String openid,String time,String type,String company){
+        achievementMapper.insertlogic(logic, openid,time,type,company);
+        return ResultUtils.success();
+
+    }
+    //查询是否签到
+    @Override
+    public String querylogic(String openid,String type){
+        return achievementMapper.querylogic(openid,type);
+    }
+    //查询全部单位
+    @Override
+    public Result querycompany(String openid){
+        return ResultUtils.success(achievementMapper.querycompany(openid));
+    }
+    //查询会议名称
+    @Override
+    public String querytype(String time){
+        return achievementMapper.querytype(time);
+    }
+
+
+
+
+
+
     @Override
     public Result<Achievement> queryfuzzy(int pageNum,String idcard){
         PageHelper.startPage(pageNum,10);
         List<Achievement> list=achievementMapper.queryfuzzy(idcard);
         PageInfo<Achievement> pageInfo=new PageInfo<Achievement>(list);
         return ResultUtils.success(pageInfo);
+    }
+
+    @Override
+    public String querybyopenid(String openid){
+        return achievementMapper.querybyopenid(openid);
     }
 
     /**

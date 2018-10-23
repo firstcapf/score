@@ -45,8 +45,27 @@ public class ResultUtils {
     public static Result success(){
         Result result = new Result();
         result.setCode(200);
-        result.setMsg("成功");
         result.setData(null);
+        return result;
+    }
+    public static Result success1(Object object){
+        Result result = new Result();
+        result.setCode(200);
+        result.setMsg("报到成功，请勿重复报到");
+        result.setData(object);
+        return result;
+    }
+    public static Result success2(){
+        Result result = new Result();
+        result.setCode(200);
+        result.setMsg("签到成功");
+        return result;
+    }
+    public static Result error1(Object object){
+        Result result = new Result();
+        result.setCode(200);
+        result.setMsg("签到成功");
+        result.setData(object);
         return result;
     }
 

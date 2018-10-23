@@ -20,16 +20,21 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 @Controller
 @Api(value = "微信用户管理",description = "做各种操作 ")
 @RequestMapping("/text/wxuser")
 public class WXuserController {
+
+    @Autowired
+    private AchievementService achievementService;
+
     @Resource
     private WXuserService wxuserService;
-
-
+   // private AchievementService achievementService;
     /**
      *成绩查询接口  getcode
      * url:  https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxe68e474aba8ac509&redirect_uri=http%3a%2f%2flandbigdata.swjtu.edu.cn%2fgetcode&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect
@@ -37,9 +42,9 @@ public class WXuserController {
      */
     @RequestMapping("/getcode")
     public  String  getcode(HttpServletRequest request,HttpServletResponse response, Map<String,Object> model) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
-
            String code =request.getParameter("code");
            WeixinOauth2Token token=CommonUtil.getOauth2AccessToken(code);
+
            SNSUserInfo userinfo=CommonUtil.getSNSUserInfo(token.getAccessToken(),token.getOpenId());
            if(userinfo!=null&&userinfo.getOpenId()!=null)
           {
@@ -57,7 +62,6 @@ public class WXuserController {
           response.sendRedirect("http://landbigdata.swjtu.edu.cn/score/#/");
           return token.getOpenId();
     }
-
 
     /**
      * 下一步完成签到接口
@@ -92,6 +96,107 @@ public class WXuserController {
         response.sendRedirect("http://landbigdata.swjtu.edu.cn/score/#/");
         return token.getOpenId();
     }
+
+    //微信报到
+
+    /**url:https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxe68e474aba8ac509&redirect_uri=http%3a%2f%2flandbigdata.swjtu.edu.cn%2freport&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect
+     *
+     */
+    @RequestMapping("/report")
+    @ApiOperation(value = "微信报到",httpMethod = "GET")
+    public Result report(String company,HttpServletRequest request) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
+
+        String code =request.getParameter("code");
+        System.out.println("code:"+code);
+        WeixinOauth2Token token=CommonUtil.getOauth2AccessToken(code);
+        System.out.println("token:"+token.getAccessToken());
+        SNSUserInfo userinfo=CommonUtil.getSNSUserInfo(token.getAccessToken(),token.getOpenId());
+        if(userinfo!=null&&userinfo.getOpenId()!=null)
+        {
+            String openid=userinfo.getOpenId();
+            SimpleDateFormat format0 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String time=format0.format(new Date());
+            String type=achievementService.querytype(time);
+            String logic="1";
+            if(type==null)
+            {
+                return ResultUtils.error(209,"未到报道时间！");
+            }
+            if (achievementService.querybyopenid(openid)!=null){
+                if(achievementService.querybylogic(openid,type)!=null){
+                        //报到成功，请勿重新报到
+                        return ResultUtils.success1(achievementService.queryreport(openid,type));
+                    }
+                    else {
+                        achievementService.insertreport(openid,logic,time,type,company);
+                        return ResultUtils.error(200,"报到成功");
+                    }
+                }
+                else{
+                    return ResultUtils.error(208,"返回到绑定微信页面");
+                }
+            }
+            else{
+                return ResultUtils.error(207,"openid无效");
+            }
+
+    }
+
+    //微信报到
+    @RequestMapping("/register")
+    @ApiOperation(value = "微信签到",httpMethod = "GET")
+    public Result register(String company,HttpServletRequest request) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
+        String code = request.getParameter("code");
+        WeixinOauth2Token token = CommonUtil.getOauth2AccessToken(code);
+        SNSUserInfo userinfo = CommonUtil.getSNSUserInfo(token.getAccessToken(), token.getOpenId());
+        if (userinfo != null && userinfo.getOpenId() != null) {
+            String openid = userinfo.getOpenId();
+            SimpleDateFormat format0 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String time = format0.format(new Date());
+            String type = achievementService.querytype(time);
+            String logic = "1";
+            if (type == null) {
+                return ResultUtils.error(209, "签到时间未到！");
+            }
+            if (openid != null && openid.length() > 4) {
+                if (achievementService.querybyopenid(openid) != null) {
+                    String sr = achievementService.querybylogic(openid, type);
+                    if (achievementService.querybylogic(openid, type) == null) {
+                        //报到成功，请勿重新报到
+                        return ResultUtils.error(211, "请先报到！");
+                    }
+                    String starttime = (achievementService.querystarttime(type).toString()).substring(0, 19);
+                    String endtime = (achievementService.queryendtime(type).toString()).substring(0, 19);
+                    System.out.println(starttime + "       " + endtime);
+                    if ((starttime.compareToIgnoreCase(time) <= 0) && (endtime.compareToIgnoreCase(time) >= 0)) {
+                        if (achievementService.querylogic(openid, type) == null) {
+                            System.out.println("签到成功---" + "现在时间：" + time + "    " + "开始时间：" + starttime + "     " + "结束时间：" + endtime);
+                            achievementService.insertlogic(logic, openid, time, type, company);
+                            //签到成功
+                            //重定向跳转到查询页面
+
+                            return ResultUtils.success2();
+                        } else {
+                            return ResultUtils.error(210, "已经签到，请勿重复签到");
+                        }
+                    } else if (starttime.compareToIgnoreCase(time) > 0) {
+                        return ResultUtils.error(209, "签到失败，未到签到时间");
+                    } else {
+                        return ResultUtils.error(209, "签到失败，签到时间已过");
+                    }
+                } else {
+                    return ResultUtils.error(208, "返回到绑定微信页面");
+                }
+            } else {
+                return ResultUtils.error(207, "openid无效");
+            }
+        }
+        return ResultUtils.error(207, "openid无效");
+    }
+
+
+
+
 
 
     @RequestMapping("/wxuseradd")

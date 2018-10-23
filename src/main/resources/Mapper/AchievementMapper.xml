@@ -66,9 +66,9 @@
         where idcard=#{idcard}
     </update>
     <!--<select id="querybyid" resultType="com.example.demosb.Entity.Achievement">-->
-        <!--select id,subject,place,name,phone,idcard,company,grade,testtime-->
-        <!--from achievement-->
-        <!--where subject=#{subject} and name=#{name} and idcard=#{idcard}-->
+    <!--select id,subject,place,name,phone,idcard,company,grade,testtime-->
+    <!--from achievement-->
+    <!--where subject=#{subject} and name=#{name} and idcard=#{idcard}-->
     <!--</select>-->
     <select id="querybyid" resultType="com.example.demosb.Entity.Achievement">
         select *
@@ -95,5 +95,96 @@
         where CONCAT(IFNULL(idcard,''),IFNULL(subject,''),IFNULL(place,''),IFNULL(name,''),IFNULL(phone,''),IFNULL(company,''),IFNULL(sex,''),
         IFNULL(seatnumber,''))
         like CONCAT(CONCAT('%',#{idcard},'%'))
+    </select>
+
+    <!--<select id="querylogic" resultType="java.lang.String">-->
+    <!--SELECT logic-->
+    <!--FROM register-->
+    <!--where openid=#{openid}-->
+    <!--group by time1-->
+    <!--order by time1 desc limit 1-->
+    <!--</select>-->
+    <select id="querytime" resultType="java.lang.String">
+        SELECT time1
+        FROM register
+        where openid=#{openid}
+        group by time1
+        order by time1 desc limit 1
+    </select>
+    <select id="querybyopenid" resultType="java.lang.String">
+        select cardid
+        from wx_user
+        where openid=#{openid}
+    </select>
+    <update id="updatelogic" parameterType="java.lang.String">
+        update register
+        <set>
+            <if test="logic!=null">logic=#{logic},</if>
+            <if test="time1!=null">time2=#{time1},</if>
+            <if test="time2!=null">time1=#{time2}</if>
+        </set>
+        where openid=#{openid} and time1=#{time2}
+    </update>
+    <!--<insert id="insertlogic" parameterType="java.lang.String">-->
+    <!--insert into register(openid,logic,time1,time2)-->
+    <!--values(#{openid},#{logic},#{time2},#{time1})-->
+    <!--</insert>-->
+    <select id="queryregister" parameterType="java.lang.String" resultType="com.example.demosb.Entity.Register">
+        select nickname,cardid,truename,time,logic,company,type
+        from register join wx_user on wx_user.openid=register.openid
+        where type=#{type}
+    </select>
+    <select id="querycount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*)
+        from register
+        where openid=#{openid} and time1=#{time2} and (time2 between "08:00:00" and "09:00:00")
+    </select>
+    <select id="querycount2" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*)
+        from register
+        where openid=#{openid} and time1=#{time2} and (time2 between "20:00:00" and "23:30:00")
+    </select>
+
+    <select id="querybylogic" parameterType="java.lang.String" resultType="java.lang.String">
+        select logic
+        from report
+        where openid=#{openid} and type=#{type}
+    </select>
+    <insert id="insertreport" parameterType="java.lang.String">
+        insert into report(openid,logic,time,type,company)
+        values(#{openid},#{logic},#{time},#{type},#{company})
+    </insert>
+    <select id="queryreport" parameterType="java.lang.String" resultType="com.example.demosb.Entity.Report">
+        select *
+        from report
+        where openid=#{openid} and type=#{type}
+    </select>
+    <select id="querystarttime" parameterType="java.lang.String" resultType="java.sql.Timestamp">
+        select starttime
+        from timetable
+        where type=#{type}
+    </select>
+    <select id="queryendtime" parameterType="java.lang.String" resultType="java.sql.Timestamp">
+        select endtime
+        from timetable
+        where type=#{type}
+    </select>
+    <insert id="insertlogic" parameterType="java.lang.String">
+        insert into register(openid,logic,time,type,company)
+        values(#{openid},#{logic},#{time},#{type},#{company})
+    </insert>
+    <select id="querylogic" resultType="java.lang.String">
+        SELECT logic
+        FROM register
+        where openid=#{openid} and type=#{type}
+    </select>
+    <select id="querycompany" resultType="java.lang.String">
+        SELECT distinct company
+        FROM achievement
+    </select>
+    <select id="querytype" resultType="java.lang.String">
+    select type
+    from timetable
+    where #{time} between starttime and endtime
     </select>
 </mapper>

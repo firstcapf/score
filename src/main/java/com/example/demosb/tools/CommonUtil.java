@@ -27,13 +27,13 @@ public class CommonUtil {
 
     /**
      * 获取网页授权凭证
-     *
      * @param code
      * @return
      */
     public static WeixinOauth2Token getOauth2AccessToken(String code) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
         WeixinOauth2Token wat = null;
         // 拼接请求地址
+     //   https://api.weixin.qq.com/sns/oauth2/access_token?appid=wxe68e474aba8ac509&secret=8697ea4ad4c606da4da954d73e0e9b26&code=021KG4k90hEelx1hRdj904jjk90KG4kV&grant_type=authorization_code
         String requestUrl = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code";
         requestUrl = requestUrl.replace("APPID", appId);
         requestUrl = requestUrl.replace("SECRET", appSecret);

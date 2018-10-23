@@ -55,6 +55,8 @@ public class WXuser {
     //状态
     private   int   status;
 
+    private String logic;
+
     public Integer getId() {
         return id;
     }
@@ -181,5 +183,13 @@ public class WXuser {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getLogic() {
+        return logic;
+    }
+
+    public void setLogic(String logic) {
+        this.logic = logic;
     }
 }
