@@ -2,6 +2,7 @@ package com.example.demosb.Service.Impl;
 
 
 import com.example.demosb.Entity.Achievement;
+import com.example.demosb.Entity.Information;
 import com.example.demosb.Entity.Result;
 import com.example.demosb.Entity.WXuser;
 import com.example.demosb.Exception.ErrorEnum;
@@ -52,6 +53,15 @@ public class WxuserServiceImpl implements WXuserService {
     }
     public void updateWXuser(WXuser wxuser){
         wxuserMapper.updateWXuser(wxuser);
+    }
+
+    @Override
+    public Information queryidcard(String idcard){
+        return wxuserMapper.queryidcard(idcard);
+    }
+    @Override
+    public String queryname(String idcard){
+        return wxuserMapper.queryname(idcard);
     }
 
 

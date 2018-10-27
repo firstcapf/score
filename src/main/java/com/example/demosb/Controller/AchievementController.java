@@ -5,6 +5,7 @@ import com.example.demosb.Exception.ErrorEnum;
 import com.example.demosb.Service.AchievementService;
 import com.example.demosb.Service.WXuserService;
 import com.example.demosb.Util.ResultUtils;
+import com.example.demosb.tools.CommonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 
 @RestController
 @Api(value = "成绩管理",description = "对成绩做各种操作 ")
-@RequestMapping("/text/achievement")
+@RequestMapping("/wechat/achievement")
 public class AchievementController {
 
     @Autowired
@@ -64,6 +66,114 @@ public class AchievementController {
         achievementService.create(achievement);
         return ResultUtils.success();
     }
+
+    //微信绑定并报道
+    @RequestMapping("/reportapi")
+    @ApiOperation(value = "微信绑定并报道",httpMethod = "GET")
+    public  Result insertreport(String name,String idcard,String company,HttpServletRequest request,HttpServletResponse response, Map<String,Object> model) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException{
+/*        String code = request.getParameter("code");
+        System.out.println("code:"+code);
+        WeixinOauth2Token token=CommonUtil.getOauth2AccessToken(code);
+        System.out.println("token:"+token.getAccessToken());
+        SNSUserInfo userinfo = CommonUtil.getSNSUserInfo(token.getAccessToken(), token.getOpenId());*/
+
+        String openid=request.getSession().getAttribute("openid").toString();
+       /* if(userinfo!=null&&userinfo.getOpenId()!=null)
+        {*/
+            WXuser wxuser=new WXuser();
+            wxuser.setOpenId(openid);
+         /*   wxuser.setNickname(userinfo.getNickname());
+            wxuser.setProvince(userinfo.getProvince());
+            wxuser.setCountry(userinfo.getCountry());
+            wxuser.setSex(userinfo.getSex());
+            wxuser.setHeadimgurl(userinfo.getHeadImgUrl());*/
+            wxuserService.insertWXuser(wxuser);
+
+        Information card= wxuserService.queryidcard(idcard);
+
+            if (card!=null&&card.getName().equals(name)){
+                    name=wxuser.getTruename();
+                    wxuser.setTruename(name);
+                    wxuser.setOpenId(openid);
+                    wxuser.setCardid(idcard);
+                    wxuserService.updateWXuser(wxuser);
+                    SimpleDateFormat format0 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String time=format0.format(new Date());
+                    String type=achievementService.querytype(time);
+                    String logic="1";
+                    achievementService.insertreport(openid,logic,time,type,company);
+                    return ResultUtils.error(200,"恭喜，报到成功！");
+                }
+            else
+                return ResultUtils.error(201,"身份信息有误，报到失败，请联系会务组工作人员！");
+
+    }
+
+
+
+    //微信绑定并报道
+    @RequestMapping("/registerapi")
+    @ApiOperation(value = "微信绑定并报道",httpMethod = "GET")
+    public  Result registerapi(String name,String idcard,String company,HttpServletRequest request,HttpServletResponse response, Map<String,Object> model) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException{
+/*        String code = request.getParameter("code");
+        System.out.println("code:"+code);
+        WeixinOauth2Token token=CommonUtil.getOauth2AccessToken(code);
+        System.out.println("token:"+token.getAccessToken());
+        SNSUserInfo userinfo = CommonUtil.getSNSUserInfo(token.getAccessToken(), token.getOpenId());*/
+
+       // String openid=request.getSession().getAttribute("openid").toString();
+        String openid="o4zf8wFIOoCHyDPpOXlaqCpdxcvs";
+        SimpleDateFormat format0 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = format0.format(new Date());
+        String type = achievementService.querytype(time);
+        String logic = "1";
+        if (type == null) {
+            return ResultUtils.error(209, "签到时间未到！");
+        }
+        if (openid != null && openid.length() > 4) {
+            if (achievementService.querybyopenid(openid) != null) {
+
+                //   String sr = achievementService.querybylogic(openid, type);
+                //    System.out.println(sr);
+                if (achievementService.querybylogic(openid, type)== null) {
+                    //报到成功，请勿重新报到
+                    System.out.println("请先报到");
+                    response.sendRedirect("https://landbigdata.swjtu.edu.cn/wechat/ui/#/report");
+                    return ResultUtils.error(211, "请先报到！");
+                }
+                String starttime = (achievementService.querystarttime(type).toString()).substring(0, 19);
+                String endtime = (achievementService.queryendtime(type).toString()).substring(0, 19);
+                System.out.println(starttime + "       " + endtime);
+                if ((starttime.compareToIgnoreCase(time) <= 0) && (endtime.compareToIgnoreCase(time) >= 0)) {
+                    if (achievementService.querylogic(openid, type) == null) {
+                        System.out.println("签到成功---" + "现在时间：" + time + "    " + "开始时间：" + starttime + "     " + "结束时间：" + endtime);
+                        achievementService.insertlogic(logic, openid, time, type, company);
+                        //签到成功
+                        return ResultUtils.success2();
+                    } else {
+
+                        return ResultUtils.error(210, "已经签到，请勿重复签到");
+                    }
+                } else if (starttime.compareToIgnoreCase(time) > 0) {
+
+                    return ResultUtils.error(209, "签到失败，未到签到时间");
+                } else {
+
+                    return ResultUtils.error(209, "签到失败，签到时间已过");
+                }
+            } else {
+
+                return ResultUtils.error(208, "返回到绑定微信页面");
+            }
+        } else {
+
+            return ResultUtils.error(207, "openid无效");
+        }
+
+    }
+
+
+
     /**
      *
      * 删除信息

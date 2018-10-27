@@ -49,6 +49,12 @@
         where openId=#{openId}
     </select>
 
+    <select id="queryidcard" resultType="com.example.demosb.Entity.Information">
+        select *
+        from information
+        where idcard=#{idcard}
+    </select>
+
     <select id="updateWXuser" parameterType="com.example.demosb.Entity.WXuser" >
         UPDATE wx_user SET truename=#{truename} , cardid=#{cardid} , login_time=#{login_time},login_ip=#{login_ip} WHERE  openId=#{openId,jdbcType=VARCHAR};
     </select>

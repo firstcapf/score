@@ -148,7 +148,7 @@
     <select id="querybylogic" parameterType="java.lang.String" resultType="java.lang.String">
         select logic
         from report
-        where openid=#{openid} and type=#{type}
+        where openid=#{openid} and type=#{type}   LIMIT  1
     </select>
     <insert id="insertreport" parameterType="java.lang.String">
         insert into report(openid,logic,time,type,company)
@@ -178,7 +178,7 @@
         FROM register
         where openid=#{openid} and type=#{type}
     </select>
-    <select id="querycompany" resultType="java.lang.String">
+    <select id="querycompany" resultType="com.example.demosb.Entity.Achievement">
         SELECT distinct company
         FROM achievement
     </select>
