@@ -230,10 +230,7 @@ public class AchievementController {
             return ResultUtils.success2(reg);
         }
         return ResultUtils.error(201, "无签到");
-
-
     }
-
 
     /**
      *
