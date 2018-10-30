@@ -111,6 +111,9 @@ public class WXuserController {
         SNSUserInfo userinfo=CommonUtil.getSNSUserInfo(token.getAccessToken(),token.getOpenId());
         if(userinfo!=null&&userinfo.getOpenId()!=null) {
             String openid = userinfo.getOpenId();
+
+            System.out.println("url:"+userinfo.getHeadImgUrl());
+
             System.out.println("openid:"+openid);
             //  String openid="o4zf8wFIOoCHyDPpOXlaqCpdxcvs";
             request.getSession().setAttribute("openid", openid);

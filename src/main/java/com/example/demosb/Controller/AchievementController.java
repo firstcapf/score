@@ -214,13 +214,12 @@ public class AchievementController {
     @RequestMapping("/queryregisterapi")
     @ApiOperation(value = "微信签到",httpMethod = "GET")
     public Result queryregisterapi(String company,HttpServletRequest request,HttpServletResponse response) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
-        //String openid=request.getSession().getAttribute("openid").toString();
+        String openid=request.getSession().getAttribute("openid").toString();
         System.out.println("registerapi:openid"+openid);
         SimpleDateFormat format0 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = format0.format(new Date());
         String type = achievementService.querytype(time).getType();
         String logic = "1";
-        String openid="o4zf8wFIOoCHyDPpOXlaqCpdxcvs";
         if (type == null) {
             return ResultUtils.error(209, "签到时间未到！");
         }
