@@ -148,8 +148,16 @@
     <select id="querybylogic" parameterType="java.lang.String" resultType="java.lang.String">
         select logic
         from report
-        where openid=#{openid} and type=#{type}   LIMIT  1
+        where openid=#{openid} and type=#{type} LIMIT  1
     </select>
+
+
+    <select id="queryreportby" parameterType="java.lang.String" resultType="com.example.demosb.Entity.Report">
+        select report.* ,wx_user.truename ,wx_user.cardid from report LEFT JOIN wx_user on report.openid=wx_user.openid
+        where report.openid=#{openid} and type=#{type} LIMIT  1
+    </select>
+
+
     <insert id="insertreport" parameterType="java.lang.String">
         insert into report(openid,logic,time,type,company)
         values(#{openid},#{logic},#{time},#{type},#{company})
@@ -173,16 +181,15 @@
         insert into register(openid,logic,time,type,company)
         values(#{openid},#{logic},#{time},#{type},#{company})
     </insert>
-    <select id="querylogic" resultType="java.lang.String">
-        SELECT logic
-        FROM register
-        where openid=#{openid} and type=#{type}
+    <select id="queryregisterby" resultType="com.example.demosb.Entity.Register">
+        select register.* ,wx_user.truename ,wx_user.cardid from register LEFT JOIN wx_user on register.openid=wx_user.openid
+        where register.openid=#{openid} and type=#{type}
     </select>
     <select id="querycompany" resultType="com.example.demosb.Entity.Achievement">
         SELECT distinct company
         FROM achievement
     </select>
-    <select id="querytype" resultType="java.lang.String">
+    <select id="querytype" resultType="com.example.demosb.Entity.Timetable">
     select type
     from timetable
     where #{time} between starttime and endtime

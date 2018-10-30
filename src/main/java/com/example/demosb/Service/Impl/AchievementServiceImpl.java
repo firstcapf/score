@@ -192,10 +192,19 @@ public class AchievementServiceImpl implements AchievementService {
         return ResultUtils.success();
 
     }
+
+
+    @Override
+    public Report queryreportby(String openid,String type)
+    {
+        return achievementMapper.queryreportby(openid, type);
+    }
+    //添加报到信息
+
     //查询是否签到
     @Override
-    public String querylogic(String openid,String type){
-        return achievementMapper.querylogic(openid,type);
+    public Register queryregisterby(String openid,String type){
+        return achievementMapper.queryregisterby(openid,type);
     }
     //查询全部单位
     @Override
@@ -204,7 +213,7 @@ public class AchievementServiceImpl implements AchievementService {
     }
     //查询会议名称
     @Override
-    public String querytype(String time){
+    public Timetable querytype(String time){
         return achievementMapper.querytype(time);
     }
 

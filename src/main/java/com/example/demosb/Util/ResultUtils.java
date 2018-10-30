@@ -37,7 +37,14 @@ public class ResultUtils {
     public static Result success(Object object){
         Result result = new Result();
         result.setCode(200);
-        result.setMsg("成功");
+        result.setMsg("已经报道");
+        result.setData(object);
+        return result;
+    }
+    public static Result success2(Object object){
+        Result result = new Result();
+        result.setCode(200);
+        result.setMsg("已经签到");
         result.setData(object);
         return result;
     }
@@ -55,10 +62,11 @@ public class ResultUtils {
         result.setData(object);
         return result;
     }
-    public static Result success2(){
+    public static Result success3(Object object){
         Result result = new Result();
         result.setCode(200);
         result.setMsg("签到成功");
+        result.setData(object);
         return result;
     }
     public static Result error1(Object object){

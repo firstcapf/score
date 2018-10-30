@@ -28,7 +28,7 @@ public interface AchievementService {
     Result queryregister(@Param("openid") String openid,@Param("type") String type);
     Integer querycount(@Param("openid") String openid,@Param("time2") String time2);
     Integer querycount2(@Param("openid") String openid,@Param("time2") String time2);
-
+    Report queryreportby(@Param("openid") String openid,@Param("type") String type);
 
     String querybylogic(@Param("openid") String openid,@Param("type") String type);
     Result insertreport(@Param("openid") String openid,@Param("logic") String logic,@Param("time") String time,@Param("type") String type,@Param("company") String company);
@@ -36,9 +36,9 @@ public interface AchievementService {
     Timestamp querystarttime(@Param("type") String type);
     Timestamp queryendtime(@Param("type") String type);
     Result insertlogic(@Param("logic") String logic,@Param("openid") String openid,@Param("time") String time,@Param("type") String type,@Param("company") String company);
-    String querylogic(@Param("openid") String openid,@Param("type") String type);
+    Register queryregisterby(@Param("openid") String openid,@Param("type") String type);
 
     Result querycompany(@Param("openid") String openid);
-    String querytype(@Param("time") String time);
+    Timetable querytype(@Param("time") String time);
 
 }

@@ -103,67 +103,67 @@ public class WXuserController {
      *
      */
     @RequestMapping("/report")
-    @ApiOperation(value = "微信报到",httpMethod = "GET")
-    public Result report(String company,HttpServletRequest request,HttpServletResponse response) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
-
-/*        String code =request.getParameter("code");
-        System.out.println("code:"+code);
+        @ApiOperation(value = "微信报到",httpMethod = "GET")
+        public Result report(HttpServletRequest request,HttpServletResponse response) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
+        String code =request.getParameter("code");
         WeixinOauth2Token token=CommonUtil.getOauth2AccessToken(code);
         System.out.println("token:"+token.getAccessToken());
         SNSUserInfo userinfo=CommonUtil.getSNSUserInfo(token.getAccessToken(),token.getOpenId());
-        if(userinfo!=null&&userinfo.getOpenId()!=null)
-        {*/
-         //   String openid=userinfo.getOpenId();
-            String openid="o4zf8wFIOoCHyDPpOXlaqCpdxcvs";
+        if(userinfo!=null&&userinfo.getOpenId()!=null) {
+            String openid = userinfo.getOpenId();
+            System.out.println("openid:"+openid);
+            //  String openid="o4zf8wFIOoCHyDPpOXlaqCpdxcvs";
             request.getSession().setAttribute("openid", openid);
             SimpleDateFormat format0 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String time=format0.format(new Date());
-            String type=achievementService.querytype(time);
-            String logic="1";
-            if(type==null)
-            {
-                return ResultUtils.error(209,"未到报道时间！");
+            String time = format0.format(new Date());
+            String type = achievementService.querytype(time).getType();
+            System.out.println("report:type"+type);
+            String logic = "1";
+            if (type == null) {
+                return ResultUtils.error(209, "未到报道时间！");
             }
-            if (achievementService.querybyopenid(openid)!=null){
-                if(achievementService.querybylogic(openid,type)!=null){
-                        //报到成功，请勿重新报到
-                        response.sendRedirect("https://landbigdata.swjtu.edu.cn/wechat/ui/#/report");
-                        return ResultUtils.success1(achievementService.queryreport(openid,type));
-                    }
-                    else {
-                        achievementService.insertreport(openid,logic,time,type,company);
-                        response.sendRedirect("https://landbigdata.swjtu.edu.cn/wechat/ui/#/report");
-                        return ResultUtils.error(200,"报到成功");
-                    }
-                }
-                else{
+            if (achievementService.querybyopenid(openid) != null) {
+//                if(achievementService.querybylogic(openid,type)!=null){
+//                        //报到成功，请勿重新报到
+//                        response.sendRedirect("https://landbigdata.swjtu.edu.cn/wechat/ui/#/report");
+//                        return ResultUtils.success1(achievementService.queryreport(openid,type));
+//                    }
+//                    else {
+//                        achievementService.insertreport(openid,logic,time,type,company);
+//                        response.sendRedirect("https://landbigdata.swjtu.edu.cn/wechat/ui/#/report");
+//                        return ResultUtils.error(200,"报到成功");
+//                    }
+                System.out.println("report:重定向");
+                response.sendRedirect("https://landbigdata.swjtu.edu.cn/wechat/ui/#/report");
+            } else {
                 System.out.println("返回到绑定微信界面");
                 //重定向跳转到查询页面
-                response.sendRedirect("http://landbigdata.swjtu.edu.cn/score/#/");
-                    return ResultUtils.error(208,"返回到绑定微信页面");
-                }
+                response.sendRedirect("https://landbigdata.swjtu.edu.cn/wechat/ui/#/report");
+                return ResultUtils.error(208, "返回到绑定微信页面");
+            }
          /*   }
             else{
                 return ResultUtils.error(207,"openid无效");
             }*/
-
+        }
+        return ResultUtils.error(208,"返回到绑定微信页面");
     }
 
-    //微信报到
+    //微信签到
     @RequestMapping("/register")
     @ApiOperation(value = "微信签到",httpMethod = "GET")
     public Result register(String company,HttpServletRequest request,HttpServletResponse response) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
-     /*   String code = request.getParameter("code");
+        String code = request.getParameter("code");
         WeixinOauth2Token token = CommonUtil.getOauth2AccessToken(code);
         SNSUserInfo userinfo = CommonUtil.getSNSUserInfo(token.getAccessToken(), token.getOpenId());
-        if (userinfo != null && userinfo.getOpenId() != null) {*/
+        if (userinfo != null && userinfo.getOpenId() != null) {
+            String openid = userinfo.getOpenId();
+            request.getSession().setAttribute("openid", openid);
+            //  String openid="o4zf8wFIOoCHyDPpOXlaqCpdxcvs";
 
-           // String openid = userinfo.getOpenId();
-
-            String openid="o4zf8wFIOoCHyDPpOXlaqCpdxcvs";
             SimpleDateFormat format0 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String time = format0.format(new Date());
-            String type = achievementService.querytype(time);
+            String type = achievementService.querytype(time).getType();
             String logic = "1";
             if (type == null) {
                 return ResultUtils.error(209, "签到时间未到！");
@@ -174,7 +174,6 @@ public class WXuserController {
                     //   String sr = achievementService.querybylogic(openid, type);
                     //    System.out.println(sr);
                     if (achievementService.querybylogic(openid, type) == null) {
-                        //报到成功，请勿重新报到
                         System.out.println("请先报到");
                         response.sendRedirect("https://landbigdata.swjtu.edu.cn/wechat/ui/#/report");
                         return ResultUtils.error(211, "请先报到！");
@@ -208,7 +207,9 @@ public class WXuserController {
                     return ResultUtils.error(208, "返回到绑定微信页面");
                 }*/
             }
-        return ResultUtils.error(208, "返回到绑定微信页面");
+        }
+            return ResultUtils.error(208, "返回到绑定微信页面");
+
    /*     }
         return ResultUtils.error(207, "openid无效");*/
     }

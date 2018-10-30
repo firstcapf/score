@@ -10,6 +10,7 @@ public class Register {
     private String company;
     private String type;
 
+
     public String getOpenid() {
         return openid;
     }

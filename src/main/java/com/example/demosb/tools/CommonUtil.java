@@ -22,7 +22,6 @@ public class CommonUtil {
     static  String appSecret="8697ea4ad4c606da4da954d73e0e9b26";
 
 
-
     static long long_last_time=0;
 
     /**

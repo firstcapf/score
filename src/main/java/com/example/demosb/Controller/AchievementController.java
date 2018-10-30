@@ -70,62 +70,95 @@ public class AchievementController {
     //微信绑定并报道
     @RequestMapping("/reportapi")
     @ApiOperation(value = "微信绑定并报道",httpMethod = "GET")
-    public  Result insertreport(String name,String idcard,String company,HttpServletRequest request,HttpServletResponse response, Map<String,Object> model) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException{
-/*        String code = request.getParameter("code");
-        System.out.println("code:"+code);
-        WeixinOauth2Token token=CommonUtil.getOauth2AccessToken(code);
-        System.out.println("token:"+token.getAccessToken());
-        SNSUserInfo userinfo = CommonUtil.getSNSUserInfo(token.getAccessToken(), token.getOpenId());*/
+    public  Result insertreport(String name,String idcard,String company,HttpServletRequest request,HttpServletResponse response, Map<String,Object> model) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
+        SimpleDateFormat format0 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = format0.format(new Date());
+        String type = achievementService.querytype(time).getType();
+        String logic = "1";
+        String openid = request.getSession().getAttribute("openid").toString();
+        System.out.println("reportapi:openid"+openid);
+        if (type == null) {
+            return ResultUtils.error(209, "未到报道时间！");
+        }
 
-        String openid=request.getSession().getAttribute("openid").toString();
-       /* if(userinfo!=null&&userinfo.getOpenId()!=null)
-        {*/
-            WXuser wxuser=new WXuser();
-            wxuser.setOpenId(openid);
-         /*   wxuser.setNickname(userinfo.getNickname());
-            wxuser.setProvince(userinfo.getProvince());
-            wxuser.setCountry(userinfo.getCountry());
-            wxuser.setSex(userinfo.getSex());
-            wxuser.setHeadimgurl(userinfo.getHeadImgUrl());*/
+        WXuser wxuser = new WXuser();
+        wxuser.setOpenId(openid);
+        wxuser=wxuserService.querybyopenid(wxuser);
+        wxuser.setTruename(name);
+        wxuser.setOpenId(openid);
+        wxuser.setCardid(idcard);
+        //查询没有就绑定
+        if(wxuser==null)
+        {
             wxuserService.insertWXuser(wxuser);
+        }
+        else
+        {
+            wxuserService.updateWXuser(wxuser);
+        }
+        //信息核对
+        Information card = wxuserService.queryidcard(idcard);
+        if (card == null || !card.getName().equals(name))
+        {
+                return ResultUtils.error(201, "身份信息有误，报到失败，请联系会务组工作人员！");
+        }
 
-        Information card= wxuserService.queryidcard(idcard);
+        //重复报到成功
+        Report re=achievementService.queryreportby(openid, type);
+        if (re != null&&re.getOpenid()!=null&&re.getOpenid().length()>2)
+        {
+            return ResultUtils.error(201, "已经报道，请勿重复报道！");
+        }
+        //报到
+        achievementService.insertreport(openid, logic, time, type, company);
+        return ResultUtils.error(200, "报到成功");
 
-            if (card!=null&&card.getName().equals(name)){
-                    name=wxuser.getTruename();
-                    wxuser.setTruename(name);
-                    wxuser.setOpenId(openid);
-                    wxuser.setCardid(idcard);
-                    wxuserService.updateWXuser(wxuser);
-                    SimpleDateFormat format0 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    String time=format0.format(new Date());
-                    String type=achievementService.querytype(time);
-                    String logic="1";
-                    achievementService.insertreport(openid,logic,time,type,company);
-                    return ResultUtils.error(200,"恭喜，报到成功！");
-                }
-            else
-                return ResultUtils.error(201,"身份信息有误，报到失败，请联系会务组工作人员！");
-
+        /*if(achievementService.insertreport(openid, logic, time, type, company)!=null)
+        {
+            return ResultUtils.error(200, "报到成功");
+        }
+        else
+        {
+            return ResultUtils.error(207, "报到失败");
+        }*/
     }
 
-
-
     //微信绑定并报道
+    @RequestMapping("/queryreportapi")
+    @ApiOperation(value = "微信绑定并报道",httpMethod = "GET")
+    public  Result queryreportapi(String name,String idcard,String company,HttpServletRequest request,HttpServletResponse response, Map<String,Object> model) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
+        SimpleDateFormat format0 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = format0.format(new Date());
+        String type = achievementService.querytype(time).getType();
+        String logic = "1";
+        Object openidobj = request.getSession().getAttribute("openid");
+        System.out.println("reportapi:openid"+openidobj);
+     //   if(openidobj==null)
+      //       return ResultUtils.error(202, "请使用微信登陆访问！");
+      //  String openid=openidobj.toString();
+        String  openid="o4zf8wFIOoCHyDPpOXlaqCpdxcvs";
+        Report re=achievementService.queryreportby(openid, type);
+       if (re != null&&re.getOpenid()!=null&&re.getOpenid().length()>2)
+       {
+                //报到成功，请勿重新报到
+           return ResultUtils.success(re);
+        }
+        else
+        {
+           return ResultUtils.error(201, "没有报道！");
+        }
+    }
+
+    //微信绑定并签到
     @RequestMapping("/registerapi")
     @ApiOperation(value = "微信绑定并报道",httpMethod = "GET")
     public  Result registerapi(String name,String idcard,String company,HttpServletRequest request,HttpServletResponse response, Map<String,Object> model) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException{
-/*        String code = request.getParameter("code");
-        System.out.println("code:"+code);
-        WeixinOauth2Token token=CommonUtil.getOauth2AccessToken(code);
-        System.out.println("token:"+token.getAccessToken());
-        SNSUserInfo userinfo = CommonUtil.getSNSUserInfo(token.getAccessToken(), token.getOpenId());*/
 
-       // String openid=request.getSession().getAttribute("openid").toString();
-        String openid="o4zf8wFIOoCHyDPpOXlaqCpdxcvs";
+        String openid=request.getSession().getAttribute("openid").toString();
+        System.out.println("registerapi:openid"+openid);
         SimpleDateFormat format0 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = format0.format(new Date());
-        String type = achievementService.querytype(time);
+        String type = achievementService.querytype(time).getType();
         String logic = "1";
         if (type == null) {
             return ResultUtils.error(209, "签到时间未到！");
@@ -144,12 +177,15 @@ public class AchievementController {
                 String starttime = (achievementService.querystarttime(type).toString()).substring(0, 19);
                 String endtime = (achievementService.queryendtime(type).toString()).substring(0, 19);
                 System.out.println(starttime + "       " + endtime);
+
+                Register reg=achievementService.queryregisterby(openid, type);
                 if ((starttime.compareToIgnoreCase(time) <= 0) && (endtime.compareToIgnoreCase(time) >= 0)) {
-                    if (achievementService.querylogic(openid, type) == null) {
-                        System.out.println("签到成功---" + "现在时间：" + time + "    " + "开始时间：" + starttime + "     " + "结束时间：" + endtime);
+                    if (reg== null) {
                         achievementService.insertlogic(logic, openid, time, type, company);
+                        reg=achievementService.queryregisterby(openid, type);
+                        System.out.println(reg.getTruename()+reg.getCardid());
                         //签到成功
-                        return ResultUtils.success2();
+                        return ResultUtils.success3(reg);
                     } else {
 
                         return ResultUtils.error(210, "已经签到，请勿重复签到");
@@ -172,6 +208,31 @@ public class AchievementController {
 
     }
 
+
+
+    //微信签到
+    @RequestMapping("/queryregisterapi")
+    @ApiOperation(value = "微信签到",httpMethod = "GET")
+    public Result queryregisterapi(String company,HttpServletRequest request,HttpServletResponse response) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
+        //String openid=request.getSession().getAttribute("openid").toString();
+        System.out.println("registerapi:openid"+openid);
+        SimpleDateFormat format0 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = format0.format(new Date());
+        String type = achievementService.querytype(time).getType();
+        String logic = "1";
+        String openid="o4zf8wFIOoCHyDPpOXlaqCpdxcvs";
+        if (type == null) {
+            return ResultUtils.error(209, "签到时间未到！");
+        }
+
+        Register reg=achievementService.queryregisterby(openid, type);
+        if (reg!= null) {
+            return ResultUtils.success2(reg);
+        }
+        return ResultUtils.error(201, "无签到");
+
+
+    }
 
 
     /**
@@ -311,6 +372,13 @@ public class AchievementController {
     @ApiOperation(value = "查询单位",httpMethod = "GET")
     public Result querycompany(String openid){
         return ResultUtils.success(achievementService.querycompany(openid));
+    }
+    @GetMapping("/querytype")
+    @ApiOperation(value = "查询单位",httpMethod = "GET")
+    public Result querytype(){
+        SimpleDateFormat format0 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time=format0.format(new Date());
+        return ResultUtils.success(achievementService.querytype(time));
     }
 
 

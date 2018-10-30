@@ -1,9 +1,7 @@
 package com.example.demosb.Mapper;
 
-import com.example.demosb.Entity.Achievement;
-import com.example.demosb.Entity.Register;
+import com.example.demosb.Entity.*;
 import com.example.demosb.Entity.Report;
-import com.example.demosb.Entity.WXuser;
 import org.apache.ibatis.annotations.Param;
 
 import java.sql.Timestamp;
@@ -30,17 +28,17 @@ public interface AchievementMapper {
     List queryregister(@Param("openid") String openid,@Param("type") String type);
     Integer querycount(@Param("openid") String openid,@Param("time2") String time2);
     Integer querycount2(@Param("openid") String openid,@Param("time2") String time2);
-
+    Report queryreportby(@Param("openid") String openid,@Param("type") String type);
     String querybylogic(@Param("openid") String openid,@Param("type") String type);
     void insertreport(@Param("openid") String openid,@Param("logic") String logic,@Param("time") String time,@Param("type") String type,@Param("company") String company);
     List<Report> queryreport(@Param("openid") String openid,@Param("type") String type);
     Timestamp querystarttime(@Param("type") String type);
     Timestamp queryendtime(@Param("type") String type);
     void insertlogic(@Param("logic") String logic,@Param("openid") String openid,@Param("time") String time,@Param("type") String type,@Param("company") String company);
-    String querylogic(@Param("openid") String openid,@Param("type") String type);
+    Register queryregisterby(@Param("openid") String openid,@Param("type") String type);
 
     List querycompany(@Param("openid") String openid);
-    String querytype(@Param("time") String time);
+    Timetable querytype(@Param("time") String time);
 
 
 }
